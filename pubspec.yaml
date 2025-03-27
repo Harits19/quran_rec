@@ -22,3 +22,15 @@ flutter:
   assets:
     - assets/quran-data.xml
     - assets/quran-uthmani.xml
+
+  fonts:
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Amiri-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Amiri-Italic.ttf
+          style: italic
