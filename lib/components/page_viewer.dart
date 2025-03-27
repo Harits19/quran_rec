@@ -15,6 +15,7 @@ class PageViewer extends StatelessWidget {
     final currentPage = index + 1;
     final ayah = quranModel.allAyah.where((e) => e.page == currentPage);
     final currentJuz = ayah.last.juz ?? 0;
+    final currentSurah = ayah.last.surah?.name;
 
     return DefaultTextStyle(
       style: MyTextStyle(
@@ -28,7 +29,11 @@ class PageViewer extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Text("Page $currentPage"), Text("Juz $currentJuz")],
+              children: [
+                Text("Page $currentPage"),
+                Text("$currentSurah"),
+                Text("Juz $currentJuz"),
+              ],
             ),
             Spacer(),
             MyRichText(

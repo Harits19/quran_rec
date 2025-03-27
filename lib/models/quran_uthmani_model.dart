@@ -93,7 +93,18 @@ class Surahs {
     if (json['ayahs'] != null) {
       ayahs = <Ayahs>[];
       json['ayahs'].forEach((v) {
-        ayahs!.add(Ayahs.fromJson(v));
+        ayahs!.add(
+          Ayahs.fromJson(
+            json: v,
+            surah: Surahs(
+              englishName: this.englishName,
+              englishNameTranslation: englishNameTranslation,
+              name: name,
+              number: number,
+              revelationType: revelationType,
+            ),
+          ),
+        );
       });
     }
   }
@@ -122,6 +133,7 @@ class Ayahs {
   int? ruku;
   int? hizbQuarter;
   Sadja? sajda;
+  Surahs? surah;
 
   Ayahs({
     this.number,
@@ -133,9 +145,10 @@ class Ayahs {
     this.ruku,
     this.hizbQuarter,
     this.sajda,
+    this.surah,
   });
 
-  Ayahs.fromJson(Map<String, dynamic> json) {
+  Ayahs.fromJson({required Map<String, dynamic> json, required Surahs surah}) {
     final sajdaValue = json['sajda'];
     if (sajdaValue != false) {
       sajda = Sadja.fromJson(sajdaValue);
@@ -148,6 +161,7 @@ class Ayahs {
     page = json['page'];
     ruku = json['ruku'];
     hizbQuarter = json['hizbQuarter'];
+    this.surah = surah;
   }
 
   Map<String, dynamic> toJson() {
