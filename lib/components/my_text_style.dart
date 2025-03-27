@@ -14,7 +14,7 @@ class MyTextStyle extends TextStyle {
     Color? color,
     FontFamily? fontFamily,
     super.fontSize,
-  }) : super(
+  }) :  super(
          fontFamily: fontFamily?.name,
          color: color ?? Theme.of(context).textTheme.bodyMedium?.color,
        );
