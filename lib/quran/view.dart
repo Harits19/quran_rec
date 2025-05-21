@@ -28,9 +28,9 @@ class PageViewer extends StatelessWidget {
               Text("Juz $currentJuz"),
             ],
           ),
-    
+
           SizedBox(height: 32),
-    
+
           RichText(
             text: TextSpan(
               style: TextStyle(
@@ -42,8 +42,7 @@ class PageViewer extends StatelessWidget {
               children:
                   ayah.map((e) {
                     return TextSpan(
-                      text:
-                          "${e.text} (${e.numberInSurah?.toArabicNumber()}) ",
+                      text: "${e.text} (${e.numberInSurah?.toArabicNumber()}) ",
                     );
                   }).toList(),
             ),
