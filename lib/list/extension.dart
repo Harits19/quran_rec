@@ -14,4 +14,22 @@ extension ListUtil<T> on List<T> {
       return null;
     }
   }
+
+  Map<TKey, List<T>> groupBy<TKey>({required TKey Function(T) groupBy}) {
+    final List<T> source = this;
+
+    final Map<TKey, List<T>> result = {};
+
+    for (final ayah in source) {
+      final key = groupBy(ayah);
+      if (key == null) continue;
+
+      final List<T> values = [...(result[key] ?? [])];
+      values.add(ayah);
+
+      result[key] = values;
+    }
+
+    return result;
+  }
 }

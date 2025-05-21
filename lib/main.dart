@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:quran_rec/context/extension.dart';
 import 'package:quran_rec/quran/provider.dart';
 import 'package:quran_rec/quran/view.dart';
-import 'package:quran_rec/quran/model.dart';
 import 'package:quran_rec/record/provider.dart';
 import 'package:quran_rec/record/view.dart';
-import 'package:quran_rec/debug/service.dart';
 import 'package:quran_rec/text_style/constant.dart';
-import 'package:quran_rec/xml/service.dart';
 
 void main() {
   runApp(const MainApp());
@@ -30,42 +26,44 @@ class _MainAppState extends State<MainApp> {
       theme: ThemeData(fontFamily: FontFamily.amiri),
       darkTheme: ThemeData.dark(),
       home: Scaffold(
-        body: RecordProvider(
-          builder: (record, recordAction) {
-            return QuranProvider(
-              builder: (quran, recordAction) {
-                if (quran == null) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                return Stack(
+        body: QuranProvider(
+          builder: (quran, recordAction) {
+            if (quran == null) {
+              return Center(child: CircularProgressIndicator());
+            }
+            return RecordProvider(
+              quran: quran,
+              builder: (record, recordAction) {
+                return Column(
                   children: [
-                    Positioned.fill(
+                    Expanded(
                       child: GestureDetector(
                         onTap: () {
                           showRecordView = !showRecordView;
                           setState(() {});
                         },
                         child: PageView.builder(
+                          controller: record.controller,
                           scrollBehavior: ScrollBehavior(),
                           reverse: true,
-                          itemCount: quran.totalPage,
+                          itemCount: quran.pages.length,
                           itemBuilder: (context, index) {
                             return PageViewer(
                               key: Key(index.toString()),
                               index: index,
-                              quranModel: quran,
+                              ayahs: quran.pages[index],
                             );
                           },
                         ),
                       ),
                     ),
-            
+
                     if (showRecordView) RecordView(),
                   ],
                 );
               },
             );
-          }
+          },
         ),
       ),
     );

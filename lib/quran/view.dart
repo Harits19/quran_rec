@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:quran_rec/context/extension.dart';
 import 'package:quran_rec/quran/model.dart';
+import 'package:quran_rec/record/provider.dart';
 import 'package:quran_rec/text_style/constant.dart';
 import 'package:quran_rec/number/extension.dart';
 
 class PageViewer extends StatelessWidget {
-  const PageViewer({super.key, required this.quranModel, required this.index});
+  const PageViewer({super.key, required this.ayahs, required this.index});
 
-  final QuranModel quranModel;
+  final List<Ayahs> ayahs;
   final int index;
 
   @override
   Widget build(BuildContext context) {
     final currentPage = index + 1;
-    final ayah = quranModel.allAyah.where((e) => e.page == currentPage);
-    final currentJuz = ayah.last.juz ?? 0;
-    final currentSurah = ayah.last.surah?.name;
+    final currentJuz = ayahs.last.juz ?? 0;
+    final currentSurah = ayahs.last.surah?.name;
 
     return SafeArea(
       child: ListView(
@@ -40,8 +41,16 @@ class PageViewer extends StatelessWidget {
                 fontFamily: FontFamily.amiri,
               ),
               children:
-                  ayah.map((e) {
+                  ayahs.map((e) {
+                    final isSelected =
+                        context
+                            .of<RecordViewModel>()
+                            .state
+                            .selectedAyah
+                            ?.number ==
+                        e.number;
                     return TextSpan(
+                      style: TextStyle(color: isSelected ? Colors.blue : null),
                       text: "${e.text} (${e.numberInSurah?.toArabicNumber()}) ",
                     );
                   }).toList(),

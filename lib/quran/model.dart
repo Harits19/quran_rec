@@ -1,4 +1,4 @@
-import 'package:quran_rec/debug/service.dart';
+import 'package:quran_rec/list/extension.dart';
 
 class QuranModel {
   int get totalPage {
@@ -13,6 +13,10 @@ class QuranModel {
             .toList();
 
     return result;
+  }
+
+  List<List<Ayahs>> get pages {
+    return allAyah.groupBy(groupBy: (item) => item.page).values.toList();
   }
 
   int? code;
@@ -124,7 +128,7 @@ class Surahs {
 }
 
 class Ayahs {
-  int? number;
+  int number;
   String? text;
   int? numberInSurah;
   int? juz;
@@ -136,7 +140,7 @@ class Ayahs {
   Surahs? surah;
 
   Ayahs({
-    this.number,
+    required this.number,
     this.text,
     this.numberInSurah,
     this.juz,
@@ -148,20 +152,25 @@ class Ayahs {
     this.surah,
   });
 
-  Ayahs.fromJson({required Map<String, dynamic> json, required Surahs surah}) {
+  static Ayahs fromJson({
+    required Map<String, dynamic> json,
+    required Surahs surah,
+  }) {
+    final ayah = Ayahs(number: json['number']);
     final sajdaValue = json['sajda'];
     if (sajdaValue != false) {
-      sajda = Sadja.fromJson(sajdaValue);
+      ayah.sajda = Sadja.fromJson(sajdaValue);
     }
-    number = json['number'];
-    text = json['text'];
-    numberInSurah = json['numberInSurah'];
-    juz = json['juz'];
-    manzil = json['manzil'];
-    page = json['page'];
-    ruku = json['ruku'];
-    hizbQuarter = json['hizbQuarter'];
-    this.surah = surah;
+    ayah.text = json['text'];
+    ayah.numberInSurah = json['numberInSurah'];
+    ayah.juz = json['juz'];
+    ayah.manzil = json['manzil'];
+    ayah.page = json['page'];
+    ayah.ruku = json['ruku'];
+    ayah.hizbQuarter = json['hizbQuarter'];
+    ayah.surah = surah;
+
+    return ayah;
   }
 
   Map<String, dynamic> toJson() {

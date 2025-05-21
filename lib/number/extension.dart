@@ -1,4 +1,4 @@
-import 'package:quran_rec/string/extension.dart';
+import 'package:quran_rec/string/string_util.dart';
 
 extension NumberExtension on num {
   String toArabicNumber() {

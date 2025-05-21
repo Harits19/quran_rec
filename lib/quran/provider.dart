@@ -6,6 +6,8 @@ import 'package:quran_rec/xml/service.dart';
 typedef QuranState = QuranModel;
 typedef QuranAction = Null;
 
+typedef QuranViewModel = StateViewModel<QuranState, QuranAction>;
+
 class QuranProvider extends StatefulWidget {
   const QuranProvider({super.key, required this.builder});
 

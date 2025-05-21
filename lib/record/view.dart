@@ -10,28 +10,33 @@ class RecordView extends StatelessWidget {
     final viewModel = context.of<RecordViewModel>();
     final state = viewModel.state;
     final action = viewModel.action;
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        width: double.infinity,
-        color: Colors.black.withValues(alpha: 0.7),
-        padding: EdgeInsets.all(16),
-        child: Row(
-          children: [
-            if (!state.isRecording)
-              ElevatedButton(
-                onPressed: action?.toggleRecording,
-                child: Text("Record"),
-              )
-            else
-              ElevatedButton(
-                onPressed: action?.toggleRecording,
-                child: Text("Stop Recording"),
-              ),
+    return Container(
+      width: double.infinity,
+      color: Colors.black.withValues(alpha: 0.7),
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: [
+          if (!state.isRecording)
+            ElevatedButton(
+              onPressed: action?.toggleRecording,
+              child: Text("Record"),
+            )
+          else ...[
+            ElevatedButton(
+              onPressed: action?.toggleRecording,
+              child: Text("Stop Recording"),
+            ),
+
+            ElevatedButton(
+              onPressed: () => action?.changeAyah(true),
+              child: Text("Next"),
+            ),
+            ElevatedButton(
+              onPressed: () => action?.changeAyah(false),
+              child: Text("Prev"),
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
