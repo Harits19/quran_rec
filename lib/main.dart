@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quran_rec/quran/provider.dart';
 import 'package:quran_rec/quran/view.dart';
 import 'package:quran_rec/record/provider.dart';
-import 'package:quran_rec/record/view.dart';
+import 'package:quran_rec/footer/view.dart';
 import 'package:quran_rec/text_style/constant.dart';
 
 void main() {
@@ -27,7 +27,8 @@ class _MainAppState extends State<MainApp> {
       darkTheme: ThemeData.dark(),
       home: Scaffold(
         body: QuranProvider(
-          builder: (quran, recordAction) {
+          builder: (quranState, recordAction) {
+            final quran = quranState.quran;
             if (quran == null) {
               return Center(child: CircularProgressIndicator());
             }
@@ -58,7 +59,7 @@ class _MainAppState extends State<MainApp> {
                       ),
                     ),
 
-                    if (showRecordView) RecordView(),
+                    if (showRecordView) FooterView(),
                   ],
                 );
               },

@@ -3,30 +3,43 @@ import 'package:quran_rec/inherited_widget/state.dart';
 import 'package:quran_rec/quran/model.dart';
 import 'package:quran_rec/xml/service.dart';
 
-typedef QuranState = QuranModel;
-typedef QuranAction = Null;
+enum QuranView { wrap, list }
+
+class QuranState {
+  final QuranModel? quran;
+  final QuranView view;
+
+  QuranState({required this.quran, required this.view});
+}
+
+class QuranAction {
+  final VoidCallback toggleView;
+
+  QuranAction({required this.toggleView});
+}
 
 typedef QuranViewModel = StateViewModel<QuranState, QuranAction>;
 
 class QuranProvider extends StatefulWidget {
   const QuranProvider({super.key, required this.builder});
 
-  final StateBuilder<QuranState?, QuranAction> builder;
+  final StateBuilder<QuranState, QuranAction> builder;
 
   @override
   State<QuranProvider> createState() => _QuranProviderState();
 }
 
 class _QuranProviderState extends State<QuranProvider> {
-  QuranState? quranModel;
+  QuranModel? quran;
+  QuranView view = QuranView.wrap;
 
   void loadQuranUthmani() async {
     final xmlService = XmlService();
     final document = await xmlService.readXMLFile(XMLFile.quranUthmani);
 
-    final result = QuranState.fromJson(document);
+    final result = QuranModel.fromJson(document);
 
-    quranModel = result;
+    quran = result;
     setState(() {});
   }
 
@@ -38,9 +51,18 @@ class _QuranProviderState extends State<QuranProvider> {
 
   @override
   Widget build(BuildContext context) {
-    return MyProvider<QuranState?, QuranAction>(
-      state: quranModel,
-      action: null,
+    return MyProvider<QuranState, QuranAction>(
+      state: QuranState(quran: quran, view: view),
+      action: QuranAction(
+        toggleView: () {
+          var nextValue = view.index + 1;
+          if (nextValue >= QuranView.values.length) {
+            nextValue = 0;
+          }
+          view = QuranView.values[nextValue];
+          setState(() {});
+        },
+      ),
       builder: widget.builder,
     );
   }

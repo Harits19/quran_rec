@@ -5,11 +5,11 @@ class MyState<TState, TAction> extends InheritedWidget {
     super.key,
     required super.child,
     required this.state,
-    this.action,
+    required this.action,
   });
 
   final TState state;
-  final TAction? action;
+  final TAction action;
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
