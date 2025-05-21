@@ -1,6 +1,6 @@
-import 'package:quran_rec/services/debug_service.dart';
+import 'package:quran_rec/debug/service.dart';
 
-class QuranUthmaniModel {
+class QuranModel {
   int get totalPage {
     return data?.surahs?.last.ayahs?.last.page ?? 0;
   }
@@ -19,9 +19,9 @@ class QuranUthmaniModel {
   String? status;
   SurahData? data;
 
-  QuranUthmaniModel({this.code, this.status, this.data});
+  QuranModel({this.code, this.status, this.data});
 
-  QuranUthmaniModel.fromJson(Map<String, dynamic> json) {
+  QuranModel.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     status = json['status'];
     data = json['data'] != null ? SurahData.fromJson(json['data']) : null;
@@ -97,7 +97,7 @@ class Surahs {
           Ayahs.fromJson(
             json: v,
             surah: Surahs(
-              englishName: this.englishName,
+              englishName: englishName,
               englishNameTranslation: englishNameTranslation,
               name: name,
               number: number,
