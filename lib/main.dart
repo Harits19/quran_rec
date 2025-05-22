@@ -34,21 +34,26 @@ class _MainAppState extends State<MainApp> {
               quran: quran,
               builder: (recordState, recordAction) {
                 final showButton = recordState.selectedAyah != null;
+                final isPlaying = recordState.isPlaying;
+                final isRecording = recordState.isRecording;
                 return Column(
                   children: [
                     Expanded(
-                      child: PageView.builder(
-                        controller: recordState.controller,
-                        scrollBehavior: ScrollBehavior(),
-                        reverse: true,
-                        itemCount: quran.pages.length,
-                        itemBuilder: (context, index) {
-                          return PageViewer(
-                            key: Key(index.toString()),
-                            index: index,
-                            ayahs: quran.pages[index],
-                          );
-                        },
+                      child: IgnorePointer(
+                        ignoring: isRecording || isPlaying,
+                        child: PageView.builder(
+                          controller: recordState.controller,
+                          scrollBehavior: ScrollBehavior(),
+                          reverse: true,
+                          itemCount: quran.pages.length,
+                          itemBuilder: (context, index) {
+                            return PageViewer(
+                              key: Key(index.toString()),
+                              index: index,
+                              ayahs: quran.pages[index],
+                            );
+                          },
+                        ),
                       ),
                     ),
 
