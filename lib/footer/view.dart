@@ -14,6 +14,8 @@ class FooterView extends StatelessWidget {
     final state = record.state;
     final action = record.action;
     final selectedView = quran.state.view;
+    final isPlaying = record.state.isPlaying;
+    final isRecording = state.isRecording;
     return Container(
       width: double.infinity,
       color: Colors.black.withValues(alpha: 0.7),
@@ -25,16 +27,18 @@ class FooterView extends StatelessWidget {
             onPressed: quran.action.toggleView,
             child: Text(selectedView.name.capitalize()),
           ),
-          if (!record.state.isPlaying)
-            ElevatedButton(onPressed: record.action.play, child: Text("Play"))
-          else
-            ElevatedButton(onPressed: record.action.stop, child: Text("Stop")),
-          if (!state.isRecording)
+
+          if (!isRecording && !isPlaying) ...[
+            ElevatedButton(onPressed: record.action.play, child: Text("Play")),
             ElevatedButton(
               onPressed: action.toggleRecording,
               child: Text("Record"),
-            )
-          else ...[
+            ),
+          ],
+
+          if (isPlaying)
+            ElevatedButton(onPressed: record.action.stop, child: Text("Stop")),
+          if (isRecording) ...[
             ElevatedButton(
               onPressed: action.toggleRecording,
               child: Text("Stop Recording"),

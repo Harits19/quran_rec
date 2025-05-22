@@ -1,9 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:quran_rec/debug/service.dart';
 import 'package:quran_rec/file/service.dart';
 import 'package:quran_rec/quran/model.dart';

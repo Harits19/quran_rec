@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran_rec/audio_player/service.dart';
+import 'package:quran_rec/debug/service.dart';
 import 'package:quran_rec/file/service.dart';
 import 'package:quran_rec/inherited_widget/state.dart';
 import 'package:quran_rec/quran/model.dart';
@@ -74,6 +75,7 @@ class _RecordProviderState extends State<RecordProvider> {
   }
 
   Future<bool> changeAyah(bool isNext) async {
+    myLog("changeAyah called");
     final currentPage = controller.page?.toInt() ?? 0;
 
     if (selectedAyah == null) return false;
@@ -106,25 +108,32 @@ class _RecordProviderState extends State<RecordProvider> {
   var audio = AudioPlayerService();
 
   void playAudio() async {
-    isPlaying = true;
-    setState(() {});
-    final file = FileService.tryCreate(selectedAyah);
-    final isExist = await file.exist();
-    if (!isExist) {
-      isPlaying = false;
+    try {
+      isPlaying = true;
       setState(() {});
-      return;
-    }
+      final file = FileService.tryCreate(selectedAyah);
+      final isExist = await file.exist();
+      if (!isExist) {
+        isPlaying = false;
+        setState(() {});
+        return;
+      }
 
-    await audio.play(ayah: selectedAyah);
+      await audio.play(ayah: selectedAyah);
 
-    final isChanged = await changeAyah(true);
-    if (!isChanged) {
-      isPlaying = false;
-      setState(() {});
-      return;
+      if (isPlaying) {
+        myLog("start change ayah");
+        final isChanged = await changeAyah(true);
+        if (!isChanged) {
+          isPlaying = false;
+          setState(() {});
+          return;
+        }
+        playAudio();
+      }
+    } catch (e) {
+      //
     }
-    playAudio();
   }
 
   void stopAudio() async {
@@ -159,8 +168,6 @@ class _RecordProviderState extends State<RecordProvider> {
           if (!isRecording) {
             await startRecord();
           } else {
-            selectedAyah = null;
-            setState(() {});
             await stopRecord();
           }
         },
