@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quran_rec/ayah/view.dart';
 import 'package:quran_rec/context/extension.dart';
 import 'package:quran_rec/quran/model.dart';
 import 'package:quran_rec/quran/provider.dart';
@@ -18,24 +19,6 @@ class PageViewer extends StatelessWidget {
     final currentJuz = ayahs.last.juz ?? 0;
     final currentSurah = ayahs.last.surah?.name;
 
-    TextStyle ayahStyle(Ayahs e) {
-      final isSelected =
-          context.of<RecordViewModel>().state.selectedAyah?.number == e.number;
-      return TextStyle(
-        color: isSelected ? Colors.blue : null,
-        fontSize: 16,
-        height: 2.5,
-        wordSpacing: 1.5,
-        fontFamily: FontFamily.amiri,
-      );
-    }
-
-    String ayahText(Ayahs e) {
-      return "${e.text} (${e.numberInSurah?.toArabicNumber()}) ";
-    }
-
-    final view = context.of<QuranViewModel>().state.view;
-
     return SafeArea(
       child: Directionality(
         textDirection: TextDirection.rtl,
@@ -53,24 +36,7 @@ class PageViewer extends StatelessWidget {
 
             SizedBox(height: 32),
 
-            if (view == QuranView.wrap)
-              RichText(
-                text: TextSpan(
-                  children:
-                      ayahs.map((e) {
-                        return TextSpan(style: ayahStyle(e), text: ayahText(e));
-                      }).toList(),
-                ),
-              ),
-
-            if (view == QuranView.list)
-              ...ayahs.map((e) {
-                return Card(
-                  child: ListTile(
-                    title: Text(ayahText(e), style: ayahStyle(e)),
-                  ),
-                );
-              }),
+            AyahView( ayahs: ayahs)
           ],
         ),
       ),

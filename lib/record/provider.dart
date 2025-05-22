@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quran_rec/context/extension.dart';
+import 'package:quran_rec/file/service.dart';
 import 'package:quran_rec/inherited_widget/state.dart';
 import 'package:quran_rec/quran/model.dart';
-import 'package:quran_rec/quran/provider.dart';
+import 'package:quran_rec/record/service.dart';
 
 class RecordState {
   final bool isRecording;
@@ -19,8 +19,13 @@ class RecordState {
 class RecordAction {
   final VoidCallback toggleRecording;
   final ValueChanged<bool> changeAyah;
+  final ValueChanged<Ayahs> play;
 
-  RecordAction({required this.toggleRecording, required this.changeAyah});
+  RecordAction({
+    required this.toggleRecording,
+    required this.changeAyah,
+    required this.play,
+  });
 }
 
 typedef RecordViewModel = StateViewModel<RecordState, RecordAction>;
@@ -37,6 +42,10 @@ class RecordProvider extends StatefulWidget {
 
 class _RecordProviderState extends State<RecordProvider> {
   final controller = PageController();
+  final service = RecordService.create();
+  late final quran = widget.quran;
+
+  bool isRecording = false;
 
   Ayahs? selectedAyah;
 
@@ -46,51 +55,81 @@ class _RecordProviderState extends State<RecordProvider> {
     super.dispose();
   }
 
+  startRecord() async {
+    setState(() {
+      isRecording = true;
+    });
+    await service.start(ayah: selectedAyah);
+  }
+
+  stopRecord() async {
+    setState(() {
+      isRecording = false;
+    });
+    await service.stop();
+  }
+
+  Future<void> changeAyah(bool isNext) async {
+    final currentPage = controller.page?.toInt() ?? 0;
+
+    if (selectedAyah == null) return;
+    final addValue = isNext ? 1 : -1;
+
+    final newAyah = quran.nextAyah(selectedAyah, addValue);
+
+    if (newAyah == null) return;
+    final currentPageAyahs = quran.pages[currentPage];
+
+    final isFound = currentPageAyahs.any(
+      (item) => item.number == newAyah.number,
+    );
+    selectedAyah = newAyah;
+
+    setState(() {});
+    if (!isFound) {
+      controller.animateToPage(
+        currentPage + addValue,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    }
+  }
+
+  void play() async {
+    final file = FileService.tryCreate(selectedAyah);
+    final isExist = await file.exist();
+    if (!isExist) {
+      return;
+    }
+
+    await service.play(ayah: selectedAyah);
+
+    final nextAyah = quran.nextAyah(selectedAyah, 1);
+    selectedAyah = nextAyah;
+    setState(() {});
+    if (nextAyah == null) return;
+    play();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MyProvider(
       builder: widget.builder,
       state: RecordState(
         selectedAyah: selectedAyah,
-        isRecording: selectedAyah != null,
+        isRecording: isRecording,
         controller: controller,
       ),
       action: RecordAction(
-        changeAyah: (isNext) {
-          final currentPage = controller.page?.toInt() ?? 0;
-          final quran = widget.quran;
-
-          if (selectedAyah == null) return;
-          final addValue = isNext ? 1 : -1;
-
-          final newAyah =
-              (() {
-                try {
-                  return quran.allAyah.firstWhere(
-                    (item) => item.number == (selectedAyah!.number) + addValue,
-                  );
-                } catch (e) {
-                  //ignore
-                }
-              })();
-
-          if (newAyah == null) return;
-          final currentPageAyahs = quran.pages[currentPage];
-
-          final isFound = currentPageAyahs.any(
-            (item) => item.number == newAyah.number,
-          );
-          selectedAyah = newAyah;
-
-          setState(() {});
-          if (isFound) return;
-          controller.animateToPage(
-            currentPage + addValue,
-            duration: Duration(milliseconds: 500),
-            curve: Curves.ease,
-          );
+        play: (ayah) {
+          play(ayah);
         },
-        toggleRecording: () {
+        changeAyah: (isNext) async {
+          await stopRecord();
+          changeAyah(isNext);
+          await startRecord();
+        },
+        toggleRecording: () async {
           final currentPage = controller.page?.toInt() ?? 0;
           final quran = widget.quran;
 
@@ -101,9 +140,11 @@ class _RecordProviderState extends State<RecordProvider> {
             selectedAyah = firstAyah;
 
             setState(() {});
+            await startRecord();
           } else {
             selectedAyah = null;
             setState(() {});
+            await stopRecord();
           }
         },
       ),

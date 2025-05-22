@@ -15,6 +15,18 @@ class QuranModel {
     return result;
   }
 
+  Ayahs? nextAyah(Ayahs? selectedAyah, int addValue) {
+    try {
+      if (selectedAyah == null) return null;
+      return allAyah.firstWhere(
+        (item) => item.number == (selectedAyah.number) + addValue,
+      );
+    } catch (e) {
+      //ignore
+      return null;
+    }
+  }
+
   List<List<Ayahs>> get pages {
     return allAyah.groupBy(groupBy: (item) => item.page).values.toList();
   }
