@@ -25,6 +25,10 @@ class FooterView extends StatelessWidget {
             onPressed: quran.action.toggleView,
             child: Text(selectedView.name.capitalize()),
           ),
+          if (!record.state.isPlaying)
+            ElevatedButton(onPressed: record.action.play, child: Text("Play"))
+          else
+            ElevatedButton(onPressed: record.action.stop, child: Text("Stop")),
           if (!state.isRecording)
             ElevatedButton(
               onPressed: action.toggleRecording,

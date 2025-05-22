@@ -34,7 +34,14 @@ class AyahView extends StatelessWidget {
     }
 
     void handleClick(Ayahs ayah) {
-      action.play(ayah);
+      final isSelected =
+          context.of<RecordViewModel>().state.selectedAyah?.number ==
+          ayah.number;
+      if (isSelected) {
+        action.onSelectAyah(null);
+      } else {
+        action.onSelectAyah(ayah);
+      }
     }
 
     if (view == QuranView.wrap) {
@@ -62,6 +69,7 @@ class AyahView extends StatelessWidget {
         children: [
           ...ayahs.map((e) {
             return Card(
+              clipBehavior: Clip.hardEdge,
               child: ListTile(
                 title: Text(ayahText(e), style: ayahStyle(e)),
                 onTap: () {

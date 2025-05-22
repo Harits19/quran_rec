@@ -46,21 +46,4 @@ class RecordService {
     myLog("stop record audio with on $path");
   }
 
-  Future<void> play({required Ayahs? ayah}) async {
-    final file = FileService.tryCreate(ayah);
-    final filePath = file.path;
-
-    final player = AudioPlayer();
-    final completer = Completer<void>();
-
-    player.onPlayerComplete.listen((event) {
-      myLog('Audio playback finished!');
-      completer.complete(); // Resolves the future
-    });
-
-    await player.play(DeviceFileSource(filePath));
-
-    myLog('Playing audio... $filePath');
-    return completer.future;
-  }
 }

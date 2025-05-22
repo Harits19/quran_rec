@@ -17,8 +17,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool showRecordView = false;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,32 +32,27 @@ class _MainAppState extends State<MainApp> {
             }
             return RecordProvider(
               quran: quran,
-              builder: (record, recordAction) {
+              builder: (recordState, recordAction) {
+                final showButton = recordState.selectedAyah != null;
                 return Column(
                   children: [
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          showRecordView = !showRecordView;
-                          setState(() {});
+                      child: PageView.builder(
+                        controller: recordState.controller,
+                        scrollBehavior: ScrollBehavior(),
+                        reverse: true,
+                        itemCount: quran.pages.length,
+                        itemBuilder: (context, index) {
+                          return PageViewer(
+                            key: Key(index.toString()),
+                            index: index,
+                            ayahs: quran.pages[index],
+                          );
                         },
-                        child: PageView.builder(
-                          controller: record.controller,
-                          scrollBehavior: ScrollBehavior(),
-                          reverse: true,
-                          itemCount: quran.pages.length,
-                          itemBuilder: (context, index) {
-                            return PageViewer(
-                              key: Key(index.toString()),
-                              index: index,
-                              ayahs: quran.pages[index],
-                            );
-                          },
-                        ),
                       ),
                     ),
 
-                    if (showRecordView) FooterView(),
+                    if (showButton) FooterView(),
                   ],
                 );
               },
