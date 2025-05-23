@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:quran_rec/context/extension.dart';
 import 'package:quran_rec/inherited_widget/state.dart';
+import 'package:quran_rec/local/model.dart';
+import 'package:quran_rec/local/provider.dart';
+import 'package:quran_rec/local/service.dart';
 import 'package:quran_rec/quran/model.dart';
 import 'package:quran_rec/xml/service.dart';
 
-enum QuranView { wrap, list }
+enum QuranView {
+  wrap,
+  list;
+
+  const QuranView();
+
+  String toJson() => name;
+
+  static QuranView fromJson(dynamic json) {
+    return QuranView.values.firstWhere((item) => item.name == json);
+  }
+}
 
 class QuranState {
   final QuranModel? quran;
@@ -32,6 +47,8 @@ class QuranProvider extends StatefulWidget {
 class _QuranProviderState extends State<QuranProvider> {
   QuranModel? quran;
   QuranView view = QuranView.wrap;
+  late final pref = context.of<LocalViewModel>().state;
+  late final local = LocalService(key: LocalEnumKey.quranView, pref: pref);
 
   void loadQuranUthmani() async {
     final xmlService = XmlService();
@@ -43,10 +60,16 @@ class _QuranProviderState extends State<QuranProvider> {
     setState(() {});
   }
 
+  void loadQuranView() async {
+    view = QuranView.fromJson(local.get());
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     loadQuranUthmani();
+    loadQuranView();
   }
 
   @override
@@ -54,13 +77,14 @@ class _QuranProviderState extends State<QuranProvider> {
     return MyProvider<QuranState, QuranAction>(
       state: QuranState(quran: quran, view: view),
       action: QuranAction(
-        toggleView: () {
+        toggleView: () async {
           var nextValue = view.index + 1;
           if (nextValue >= QuranView.values.length) {
             nextValue = 0;
           }
           view = QuranView.values[nextValue];
           setState(() {});
+          await local.set(view);
         },
       ),
       builder: widget.builder,
